@@ -2,7 +2,10 @@
 
 namespace App\Exceptions;
 
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -50,6 +53,16 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Throwable $exception)
     {
+        if ($exception instanceof ModelNotFoundException) {
+            return response()->json(['error' => 'Modelo no encontrado'], 404);
+        }
+        if ($exception instanceof QueryException) {
+            return response()->json(['error' => 'Error de consulta: ' . $exception->getMessage()], 400);
+        }
+        if ($exception instanceof HttpException) {
+            return response()->json(['error' => 'La ruta especificada no existe'], 404);
+        }
+
         return parent::render($request, $exception);
     }
 }
