@@ -58,7 +58,7 @@ class Product extends Model
 
     public function units()
     {
-        return $this->belongsToMany('App\Unit', 'prices')->as('prices')->withPivot(['detalle'])->withTimestamps();
+        return $this->belongsToMany('App\Unit', 'prices')->as('prices')->withPivot(['detalle']);
     }
 
     public function unitsForHistorial(){

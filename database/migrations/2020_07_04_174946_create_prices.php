@@ -18,8 +18,6 @@ class CreatePrices extends Migration
             $table->foreignId('unit_id')->constrained()->onUpdate('cascade');
             $table->primary(['product_id', 'unit_id']);
             $table->decimal('detalle', 6, 2);
-            $table->dateTime('created_at')->nullable();
-            $table->dateTime('updated_at')->nullable();
         });
     }
 
