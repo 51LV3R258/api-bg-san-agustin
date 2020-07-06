@@ -49,7 +49,9 @@ class ProductController extends Controller
         if (isset($request->other_names)) {
             $product->other_names = $request->other_names;
         }
-        $product->imagen = $request->imagen;
+        if (isset($request->image)) {
+            $product->imagen = $request->imagen;
+        }
 
         if ($product->save()) {
             //Si se ha ingresado tags vincularlo
@@ -94,7 +96,51 @@ class ProductController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        try {
+            $product = Product::findOrFail($id);
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'error' => 'Producto no encontrado'
+            ], 404);
+        }
+
+        $request->validate([
+            'nombre' => 'sometimes|unique:products,nombre,' . $id,
+            'other_names' => 'array|nullable',
+            'imagen' => 'string|nullable',
+            'tag_ids' => 'array|nullable',
+            'tag_ids.*' => 'integer|distinct|exists:tags,id',
+            'prices' => 'array|required',
+            'prices.*.unit_id' => 'required|integer|distinct|exists:units,id',
+            'prices.*.detalle' => 'required|numeric'
+        ]);
+
+        $product->nombre = $request->nombre;
+        if (isset($request->other_names)) {
+            $product->other_names = $request->other_names;
+        }
+        if (isset($request->image)) {
+            $product->imagen = $request->imagen;
+        }
+
+        if (isset($request->tag_ids)) {
+            $product->tags()->sync($request->tag_ids);
+        }
+        $product->units()->sync($request->prices);
+        $product->unitsForHistorial()->attach($request->prices);
+
+        if ($product->touch()) {
+            $data = [
+                'code' => 200,
+                'product' => $product->load(['tags', 'prices'])
+            ];
+        } else {
+            $data = [
+                'code' => 400,
+                'error' => 'Error al actualizar el producto'
+            ];
+        }
+        return response()->json($data, $data['code']);
     }
 
 
