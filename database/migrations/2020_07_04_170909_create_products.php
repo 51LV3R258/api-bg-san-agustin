@@ -17,7 +17,7 @@ class CreateProducts extends Migration
             $table->id();
             $table->string('nombre', 50)->unique();
             $table->json('other_names')->nullable();
-            $table->string('imagen', 255);
+            $table->string('imagen', 255)->nullable();
             $table->dateTime('created_at')->nullable();
             $table->dateTime('updated_at')->nullable();
             $table->boolean('status')->default(true);
