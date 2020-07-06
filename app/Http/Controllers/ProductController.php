@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Product;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
-use Validator;
 
 class ProductController extends Controller
 {
@@ -33,22 +33,16 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-        $validate = Validator::make($request->all(), [
-            'nombre' => 'required',
+        $request->validate([
+            'nombre' => 'required|unique:products',
             'other_names' => 'array|nullable',
-            'imagen' => 'required',
+            'imagen' => 'string|nullable',
             'tag_ids' => 'array|nullable',
             'tag_ids.*' => 'integer|distinct|exists:tags,id',
             'prices' => 'array|required',
             'prices.*.unit_id' => 'required|integer|distinct|exists:units,id',
             'prices.*.detalle' => 'required|numeric'
         ]);
-
-        if ($validate->fails()) {
-            return response()->json([
-                'error' => $validate->errors()
-            ], 400);
-        }
 
         $product = new Product();
         $product->nombre = $request->nombre;
@@ -68,7 +62,7 @@ class ProductController extends Controller
             $product->unitsForHistorial()->attach($request->prices);
             $data = [
                 'code' => 200,
-                'product' => $product
+                'product' => $product->load(['tags', 'prices'])
             ];
         } else {
             $data = [

@@ -5,6 +5,7 @@ namespace App\Exceptions;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Throwable;
 
@@ -61,6 +62,9 @@ class Handler extends ExceptionHandler
         }
         if ($exception instanceof HttpException) {
             return response()->json(['error' => 'La ruta especificada no existe'], 404);
+        }
+        if ($exception instanceof ValidationException) {
+            return response()->json(['error' => $exception->validator->errors()], 400);
         }
 
         return parent::render($request, $exception);
