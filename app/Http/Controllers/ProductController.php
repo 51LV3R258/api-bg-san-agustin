@@ -96,4 +96,38 @@ class ProductController extends Controller
     {
         //
     }
+
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy($id)
+    {
+        try {
+            $product = Product::findOrFail($id);
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'error' => 'Producto no encontrado'
+            ], 404);
+        }
+        $product->tags()->detach();
+        $product->units()->detach();
+        $product->unitsForHistorial()->detach();
+
+        if ($product->delete()) {
+            $data = [
+                'code' => 200,
+                'message' => 'Producto eliminado correctamente'
+            ];
+        } else {
+            $data = [
+                'code' => 400,
+                'error' => 'No se pudo eliminar el producto'
+            ];
+        }
+        return response()->json($data, $data['code']);
+    }
 }
