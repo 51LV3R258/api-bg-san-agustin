@@ -53,7 +53,7 @@ class Product extends Model
 
     public function prices()
     {
-        return $this->hasMany('App\Price', 'product_id');
+        return $this->hasMany('App\Price');
     }
 
     public function units()
@@ -62,7 +62,7 @@ class Product extends Model
     }
 
     public function unitsForHistorial(){
-        return $this->belongsToMany('App\Unit', 'historial_prices')->as('historial_prices')->withPivot(['detalle'])->withTimestamps();
+        return $this->belongsToMany('App\Unit', 'historial_prices')->as('historial_prices')->withPivot(['id','detalle'])->withTimestamps();
     }
 
     public function historial_prices()

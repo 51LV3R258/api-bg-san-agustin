@@ -46,25 +46,19 @@ class ProductController extends Controller
 
         $product = new Product();
         $product->nombre = $request->nombre;
-        if (isset($request->other_names)) {
-            $product->other_names = $request->other_names;
-        }
-        if (isset($request->image)) {
-            $product->imagen = $request->imagen;
-        }
+        $product->other_names = $request->other_names;
+        $product->imagen = $request->imagen;
 
         if ($product->save()) {
-            //Si se ha ingresado tags vincularlo
-            if (isset($request->tag_ids)) {
-                $product->tags()->attach($request->tag_ids);
-            }
+            $product->tags()->sync($request->tag_ids);
             //Vincular precios de producto
             $product->units()->attach($request->prices);
             //Vincular a historial de precios
             $product->unitsForHistorial()->attach($request->prices);
             $data = [
                 'code' => 200,
-                'product' => $product->load(['tags', 'prices'])
+                'message' => 'Producto guardado'
+                // 'product' => $product->fresh()
             ];
         } else {
             $data = [
@@ -116,23 +110,34 @@ class ProductController extends Controller
         ]);
 
         $product->nombre = $request->nombre;
-        if (isset($request->other_names)) {
-            $product->other_names = $request->other_names;
-        }
-        if (isset($request->image)) {
-            $product->imagen = $request->imagen;
-        }
+        $product->other_names = $request->other_names;
+        $product->imagen = $request->imagen;
 
-        if (isset($request->tag_ids)) {
-            $product->tags()->sync($request->tag_ids);
-        }
+
+        $product->tags()->sync($request->tag_ids);
         $product->units()->sync($request->prices);
-        $product->unitsForHistorial()->attach($request->prices);
+
+        $prices_to_update = array();
+        foreach ($request->prices as $price) {
+            $latest_historial = $product->historial_prices
+                ->where('unit_id', $price['unit_id'])->sortBy('id')
+                ->last();
+
+            if (isset($latest_historial)) {
+                if ($latest_historial->detalle != $price['detalle']) {
+                    array_push($prices_to_update, $price);
+                }
+            } else {
+                array_push($prices_to_update, $price);
+            }
+        }
+        $product->unitsForHistorial()->attach($prices_to_update);
 
         if ($product->touch()) {
             $data = [
                 'code' => 200,
-                'product' => $product->load(['tags', 'prices'])
+                'message' => 'Producto actualizado'
+                // 'product' => $product->fresh()
             ];
         } else {
             $data = [

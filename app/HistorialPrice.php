@@ -37,4 +37,9 @@ class HistorialPrice extends Model
     {
         return $this->belongsTo('App\Unit');
     }
+
+    public function product()
+    {
+        return $this->belongsTo('App\Product');
+    }
 }
