@@ -16,4 +16,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::group(['prefix' => 'v1.0.0'], function () {
     Route::apiResource('product', 'ProductController');
+    Route::apiResource('tag', 'TagController', [
+        'except' => ['destroy']
+    ]);
 });
