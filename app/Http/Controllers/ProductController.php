@@ -78,7 +78,19 @@ class ProductController extends Controller
      */
     public function show($id)
     {
-        //
+        try {
+            $product = Product::findOrFail($id);
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'error' => 'Producto no encontrado'
+            ], 404);
+        }
+
+        $data = [
+            'code' => 200,
+            'product' => $product
+        ];
+        return response()->json($data, $data['code']);
     }
 
     /**
