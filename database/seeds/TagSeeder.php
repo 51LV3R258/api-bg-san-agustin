@@ -56,5 +56,8 @@ class TagSeeder extends Seeder
         DB::table('tags')->insert([
             'nombre' => 'metal'
         ]);
+        DB::table('tags')->insert([
+            'nombre' => 'fideos'
+        ]);
     }
 }
