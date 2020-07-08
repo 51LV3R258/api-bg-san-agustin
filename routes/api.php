@@ -19,4 +19,8 @@ Route::group(['prefix' => 'v1.0.0'], function () {
     Route::apiResource('tag', 'TagController', [
         'except' => ['destroy']
     ]);
+
+    Route::group(['prefix' => 'search'], function () {
+        Route::get('product', 'ProductController@search');
+    });
 });

@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Laravel\Scout\Searchable;
 
 /**
  * App\Product
@@ -73,5 +74,36 @@ class Product extends Model
     public function tags()
     {
         return $this->belongsToMany('App\Tag', 'product_tags')->as('product_tags');
+    }
+
+    use Searchable;
+    public $asYouType = true;
+
+    /**
+     * Get the index name for the model.
+     *
+     * @return string
+     */
+    public function searchableAs()
+    {
+        return 'products_index';
+    }
+
+    /**
+     * Get the indexable data array for the model.
+     *
+     * @return array
+     */
+    public function toSearchableArray()
+    {
+        $product_values = [
+            'id' => $this->id,
+            'nombre' => $this->nombre,
+        ];
+        if (isset($this->other_names)) {
+            $product_values = array_merge($product_values, $this->other_names);
+        }
+
+        return $product_values;
     }
 }

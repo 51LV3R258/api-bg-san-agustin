@@ -210,4 +210,48 @@ class ProductController extends Controller
         }
         return response()->json($data, $data['code']);
     }
+
+
+    /**
+     * Search for resources.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function search(Request $request)
+    {
+
+        $request->validate([
+            'query' => 'required|string',
+            'tags' => 'sometimes|json',
+            'units' => 'sometimes|json'
+        ]);
+
+        $products = new Product();
+        $products = $products->search($request->get('query'));
+
+        //No funcional el filtro n por el momento
+        /* if ($request->get('tags') || $request->get('units')) {
+            $productsIds = $products->raw()['ids'];
+            // $cleanProducts = new Product();
+            $products = Product::whereIn('id', $productsIds);
+            if ($request->get('tags')) {
+                $products = $products->whereHas('tags', function ($q) {
+                    $q->whereIn('id', json_decode(request('tags'), true));
+                });
+            }
+            if ($request->get('units')) {
+                $products = $products->whereHas('units', function ($q) {
+                    $q->whereIn('id', json_decode(request('units'), true));
+                });
+            }
+        } */
+
+        $data = [
+            'code' => 200,
+            'products' => $products->paginate(10)
+        ];
+
+        return response()->json($data, $data['code']);
+    }
 }
