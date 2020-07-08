@@ -37,7 +37,12 @@ class ProductController extends Controller
             });
         }
 
-        return $products->get();
+        $data = [
+            'code' => 200,
+            'products' => $products->get()
+        ];
+
+        return response()->json($data, $data['code']);
     }
 
     /**
