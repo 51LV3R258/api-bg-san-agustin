@@ -7,6 +7,7 @@ use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use TeamTNT\TNTSearch\Exceptions\IndexNotFoundException;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -65,6 +66,10 @@ class Handler extends ExceptionHandler
         }
         if ($exception instanceof ValidationException) {
             return response()->json(['error' => $exception->validator->errors()], 400);
+        }
+        //Si el indice no existe
+        if ($exception instanceof IndexNotFoundException) {
+            return response()->json(['error' => 'No existe índice de registros'], 404);
         }
 
         return parent::render($request, $exception);
