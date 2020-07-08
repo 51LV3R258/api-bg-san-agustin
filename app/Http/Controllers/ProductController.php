@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Product;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
+use Validator;
 
 class ProductController extends Controller
 {
@@ -16,13 +17,27 @@ class ProductController extends Controller
     public function index(Request $request)
     {
 
+        $products = new Product();
+
         if ($request->get('status')) {
             //Convirtiendo status a boolean
             $status = filter_var($request->input('status'), FILTER_VALIDATE_BOOLEAN);
-            return Product::where('status', $status)->get();
+            // return Product::whereStatus($status)->get();
+            $products = $products->whereStatus($status);
         }
 
-        return Product::all();
+        if ($request->get('tags')) {
+            $products = $products->whereHas('tags', function ($q) {
+                $q->whereIn('id', json_decode(request('tags'), true));
+            });
+        }
+        if ($request->get('units')) {
+            $products = $products->whereHas('units', function ($q) {
+                $q->whereIn('id', json_decode(request('units'), true));
+            });
+        }
+
+        return $products->get();
     }
 
     /**
@@ -55,10 +70,11 @@ class ProductController extends Controller
             $product->units()->attach($request->prices);
             //Vincular a historial de precios
             $product->unitsForHistorial()->attach($request->prices);
+            $product = $product->fresh();
             $data = [
                 'code' => 200,
                 'message' => 'Producto guardado'
-                // 'product' => $product->fresh()
+                // 'product' => $product
             ];
         } else {
             $data = [
@@ -146,6 +162,7 @@ class ProductController extends Controller
         $product->unitsForHistorial()->attach($prices_to_update);
 
         if ($product->touch()) {
+            $product = $product->fresh();
             $data = [
                 'code' => 200,
                 'message' => 'Producto actualizado'
