@@ -17,7 +17,7 @@ class CreateHistorialPrices extends Migration
             $table->id();
             $table->foreignId('product_id')->constrained()->onUpdate('cascade');
             $table->foreignId('unit_id')->constrained()->onUpdate('cascade');
-            $table->decimal('detalle', 6, 2);
+            $table->decimal('detalle', 6, 4);
             $table->dateTime('created_at')->nullable();
             $table->dateTime('updated_at')->nullable();
         });
