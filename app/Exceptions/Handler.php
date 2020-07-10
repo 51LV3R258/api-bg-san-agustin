@@ -2,6 +2,7 @@
 
 namespace App\Exceptions;
 
+use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
@@ -56,12 +57,12 @@ class Handler extends ExceptionHandler
     public function render($request, Throwable $exception)
     {
         if ($exception instanceof ModelNotFoundException) {
-            return response()->json(['error' => 'Modelo no encontrado'], 404);
+            return response()->json(['error' => 'Recurso no encontrado'], 404);
         }
         if ($exception instanceof QueryException) {
             return response()->json(['error' => 'Error de consulta: ' . $exception->getMessage()], 400);
         }
-        if ($exception instanceof HttpException) {
+        if ($exception instanceof HttpException || $exception instanceof BindingResolutionException) {
             return response()->json(['error' => 'La ruta especificada no existe'], 404);
         }
         if ($exception instanceof ValidationException) {
