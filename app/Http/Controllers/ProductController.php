@@ -65,7 +65,7 @@ class ProductController extends Controller
         ]);
 
         $product = new Product();
-        $product->nombre = $request->nombre;
+        $product->nombre = ucwords(strtolower($request->nombre));
         $product->other_names = $request->other_names;
         $product->imagen = $request->imagen;
 
@@ -132,7 +132,7 @@ class ProductController extends Controller
         }
 
         $request->validate([
-            'nombre' => 'sometimes|unique:products,nombre,' . $id,
+            'nombre' => 'required|unique:products,nombre,' . $id,
             'other_names' => 'array|nullable',
             'imagen' => 'string|nullable',
             'tag_ids' => 'array|nullable',
@@ -142,7 +142,7 @@ class ProductController extends Controller
             'prices.*.detalle' => 'required|numeric'
         ]);
 
-        $product->nombre = $request->nombre;
+        $product->nombre = ucwords(strtolower($request->nombre));
         $product->other_names = $request->other_names;
         $product->imagen = $request->imagen;
 
