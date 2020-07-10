@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreatePrices extends Migration
+class CreateSalePricesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class CreatePrices extends Migration
      */
     public function up()
     {
-        Schema::create('prices', function (Blueprint $table) {
+        Schema::create('sale_prices', function (Blueprint $table) {
             $table->foreignId('product_id')->constrained()->onUpdate('cascade');
             $table->foreignId('unit_id')->constrained()->onUpdate('cascade');
             $table->primary(['product_id', 'unit_id']);
@@ -28,6 +28,6 @@ class CreatePrices extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('prices');
+        Schema::dropIfExists('sale_prices');
     }
 }
