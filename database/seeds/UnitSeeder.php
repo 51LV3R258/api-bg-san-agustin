@@ -12,7 +12,7 @@ class UnitSeeder extends Seeder
     public function run()
     {
         DB::table('units')->insert([
-            'nombre' => 'Kg'
+            'nombre' => 'kilos'
         ]);
         DB::table('units')->insert([
             'nombre' => 'unidad'
@@ -22,6 +22,9 @@ class UnitSeeder extends Seeder
         ]);
         DB::table('units')->insert([
             'nombre' => 'caja'
+        ]);
+        DB::table('units')->insert([
+            'nombre' => 'gramos'
         ]);
     }
 }
