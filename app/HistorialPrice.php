@@ -13,6 +13,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property float $detalle
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property string $type
+ * @property-read \App\Product $product
  * @property-read \App\Unit $unit
  * @method static \Illuminate\Database\Eloquent\Builder|\App\HistorialPrice newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\HistorialPrice newQuery()
@@ -21,6 +23,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\HistorialPrice whereDetalle($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\HistorialPrice whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\HistorialPrice whereProductId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\HistorialPrice whereType($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\HistorialPrice whereUnitId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\HistorialPrice whereUpdatedAt($value)
  * @mixin \Eloquent
@@ -29,7 +32,7 @@ class HistorialPrice extends Model
 {
     protected $table = 'historial_prices';
 
-    protected $fillable = ['product_id', 'unit_id', 'detalle'];
+    protected $fillable = ['product_id', 'unit_id', 'detalle', 'type'];
 
     protected $hidden = ['updated_at'];
 
@@ -42,4 +45,7 @@ class HistorialPrice extends Model
     {
         return $this->belongsTo('App\Product');
     }
+    protected $attributes = [
+        'type' => 'SELL'
+    ];
 }

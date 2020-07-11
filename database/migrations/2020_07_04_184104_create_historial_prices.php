@@ -20,7 +20,7 @@ class CreateHistorialPrices extends Migration
             $table->decimal('detalle', 6, 4);
             $table->dateTime('created_at')->nullable();
             $table->dateTime('updated_at')->nullable();
-            $table->char('type', 4); //BUY or SELL
+            $table->char('type', 4)->default('SELL'); //BUY or SELL (por defecto SELL)
         });
     }
 
