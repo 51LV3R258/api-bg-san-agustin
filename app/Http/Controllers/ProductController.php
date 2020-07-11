@@ -56,8 +56,8 @@ class ProductController extends Controller
         $request->validate([
             'nombre' => 'required|unique:products',
             'other_names' => 'array|nullable',
-            'unit_id' => 'integer|required|exists:units,id',
-            'purchase_price' => 'numeric|required',
+            'unit_id' => 'integer|nullable|exists:units,id|required_with:purchase_price',
+            'purchase_price' => 'numeric|nullable|required_with:unit_id',
             'imagen' => 'string|nullable',
             'tag_ids' => 'array|nullable',
             'tag_ids.*' => 'integer|distinct|exists:tags,id',
@@ -82,8 +82,10 @@ class ProductController extends Controller
             //Vincular a historial de precios
             //type: SELL el array de ventas
             $product->unitsForHistorial()->attach($request->sale_prices);
-            //type: BUY es el costo de compra
-            $product->unitsForHistorial()->attach([array('unit_id' => $request->unit_id, 'detalle' => $request->purchase_price, 'type' => 'BUY')]);
+            if (isset($request->unit_id) && isset($request->purchase_price)) {
+                //type: BUY es el costo de compra
+                $product->unitsForHistorial()->attach([array('unit_id' => $request->unit_id, 'detalle' => $request->purchase_price, 'type' => 'BUY')]);
+            }
             $product = $product->fresh();
             $data = [
                 'code' => 200,
@@ -143,8 +145,8 @@ class ProductController extends Controller
         $request->validate([
             'nombre' => 'required|unique:products,nombre,' . $id,
             'other_names' => 'array|nullable',
-            'unit_id' => 'integer|required|exists:units,id',
-            'purchase_price' => 'numeric|required',
+            'unit_id' => 'integer|nullable|exists:units,id|required_with:purchase_price',
+            'purchase_price' => 'numeric|nullable|required_with:unit_id',
             'imagen' => 'string|nullable',
             'tag_ids' => 'array|nullable',
             'tag_ids.*' => 'integer|distinct|exists:tags,id',
@@ -181,14 +183,16 @@ class ProductController extends Controller
         }
         $product->unitsForHistorial()->attach($sell_prices_to_update);
 
-        /* Determinar si se agregará el precio de compra al historial */
-        $latest_purchase_price = $product->historial_prices->where('unit_id', $request->unit_id)->where('type', 'BUY')->sortBy('id')->last();
-        if (isset($latest_purchase_price)) {
-            if ($latest_purchase_price->detalle != $request->purchase_price) {
+        if (isset($request->purchase_price) && isset($request->unit_id)) {
+            /* Determinar si se agregará el precio de compra al historial */
+            $latest_purchase_price = $product->historial_prices->where('unit_id', $request->unit_id)->where('type', 'BUY')->sortBy('id')->last();
+            if (isset($latest_purchase_price)) {
+                if ($latest_purchase_price->detalle != $request->purchase_price) {
+                    $product->unitsForHistorial()->attach([array('unit_id' => $request->unit_id, 'detalle' => $request->purchase_price, 'type' => 'BUY')]);
+                }
+            } else {
                 $product->unitsForHistorial()->attach([array('unit_id' => $request->unit_id, 'detalle' => $request->purchase_price, 'type' => 'BUY')]);
             }
-        } else {
-            $product->unitsForHistorial()->attach([array('unit_id' => $request->unit_id, 'detalle' => $request->purchase_price, 'type' => 'BUY')]);
         }
 
         if ($product->touch()) {

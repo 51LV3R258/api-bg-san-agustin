@@ -12,7 +12,7 @@ use Laravel\Scout\Searchable;
  * @property string $nombre
  * @property array|null $other_names
  * @property string|null $imagen
- * @property int $unit_id
+ * @property int|null $unit_id
  * @property float|null $purchase_price
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
@@ -23,6 +23,7 @@ use Laravel\Scout\Searchable;
  * @property-read int|null $sale_prices_count
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Tag[] $tags
  * @property-read int|null $tags_count
+ * @property-read \App\Unit|null $unit
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Unit[] $units
  * @property-read int|null $units_count
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Unit[] $unitsForHistorial
