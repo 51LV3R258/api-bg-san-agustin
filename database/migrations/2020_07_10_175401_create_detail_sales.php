@@ -18,6 +18,7 @@ class CreateDetailSales extends Migration
             $table->foreignId('product_id')->constrained()->onUpdate('cascade');
             $table->foreignId('unit_id')->constrained()->onUpdate('cascade');
             $table->primary(['product_id', 'unit_id', 'sale_id']);
+            $table->unsignedDecimal('detalle', 6, 4);
         });
     }
 

@@ -19,6 +19,7 @@ class CreateSalesTable extends Migration
             $table->dateTime('created_at')->nullable();
             $table->dateTime('updated_at')->nullable();
             $table->softDeletes('deleted_at', 0);
+            $table->unsignedDecimal('total', 10, 4);
         });
     }
 
