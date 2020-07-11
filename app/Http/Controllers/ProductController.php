@@ -58,13 +58,13 @@ class ProductController extends Controller
             'nombre' => 'required|unique:products',
             'other_names' => 'array|nullable',
             'unit_id' => 'integer|nullable|exists:units,id|required_with:purchase_price',
-            'purchase_price' => ['numeric', 'nullable', 'required_with:unit_id', new NoNegativeOrZero],
+            'purchase_price' => ['numeric', 'nullable', 'required_with:unit_id', new NoNegativeOrZero,'max:9999'],
             'imagen' => 'string|nullable',
             'tag_ids' => 'array|nullable',
             'tag_ids.*' => 'integer|distinct|exists:tags,id',
             'sale_prices' => 'array|required',
             'sale_prices.*.unit_id' => 'required|integer|distinct|exists:units,id',
-            'sale_prices.*.detalle' => ['required', 'numeric', new NoNegativeOrZero],
+            'sale_prices.*.detalle' => ['required', 'numeric', new NoNegativeOrZero,'max:9999'],
         ]);
 
         $product = new Product();
@@ -147,13 +147,13 @@ class ProductController extends Controller
             'nombre' => 'required|unique:products,nombre,' . $id,
             'other_names' => 'array|nullable',
             'unit_id' => 'integer|nullable|exists:units,id|required_with:purchase_price',
-            'purchase_price' => ['numeric', 'nullable', 'required_with:unit_id', new NoNegativeOrZero],
+            'purchase_price' => ['numeric', 'nullable', 'required_with:unit_id', new NoNegativeOrZero,'max:9999'],
             'imagen' => 'string|nullable',
             'tag_ids' => 'array|nullable',
             'tag_ids.*' => 'integer|distinct|exists:tags,id',
             'sale_prices' => 'array|required',
             'sale_prices.*.unit_id' => 'required|integer|distinct|exists:units,id',
-            'sale_prices.*.detalle' => ['required', 'numeric', new NoNegativeOrZero]
+            'sale_prices.*.detalle' => ['required', 'numeric', new NoNegativeOrZero,'max:9999']
         ]);
 
         $product->nombre = ucwords(strtolower($request->nombre));

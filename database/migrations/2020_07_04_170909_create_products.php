@@ -19,7 +19,7 @@ class CreateProducts extends Migration
             $table->json('other_names')->nullable();
             $table->string('imagen', 255)->nullable();
             $table->foreignId('unit_id')->nullable()->constrained()->onUpdate('cascade');
-            $table->unsignedDecimal('purchase_price', 6, 4)->nullable();
+            $table->unsignedDecimal('purchase_price', 8, 4)->nullable();
             $table->dateTime('created_at')->nullable();
             $table->dateTime('updated_at')->nullable();
             $table->boolean('status')->default(true);
