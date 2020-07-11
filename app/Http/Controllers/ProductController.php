@@ -54,27 +54,24 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
+
         $request->validate([
-            'nombre' => 'required|unique:products',
+            'nombre' => 'string|required|unique:products',
             'other_names' => 'array|nullable',
-            'unit_id' => 'integer|nullable|exists:units,id|required_with:purchase_price',
-            'purchase_price' => ['numeric', 'nullable', 'required_with:unit_id', new NoNegativeOrZero,'max:9999'],
+            'unit_id' => 'integer|nullable|exists:units,id',
+            'purchase_price' => ['numeric', 'nullable', new NoNegativeOrZero, 'max:9999'],
             'imagen' => 'string|nullable',
             'tag_ids' => 'array|nullable',
             'tag_ids.*' => 'integer|distinct|exists:tags,id',
             'sale_prices' => 'array|required',
             'sale_prices.*.unit_id' => 'required|integer|distinct|exists:units,id',
-            'sale_prices.*.detalle' => ['required', 'numeric', new NoNegativeOrZero,'max:9999'],
-        ]);
+            'sale_prices.*.detalle' => ['required', 'numeric', new NoNegativeOrZero, 'max:9999'],
+        ], $this->messages);
 
         $product = new Product();
         $product->nombre = ucwords(strtolower($request->nombre));
         $product->other_names = $request->other_names;
         $product->imagen = $request->imagen;
-
-        //Data de costo del producto
-        $product->unit_id = $request->unit_id;
-        $product->purchase_price = $request->purchase_price;
 
         if ($product->save()) {
             $product->tags()->sync($request->tag_ids);
@@ -84,6 +81,10 @@ class ProductController extends Controller
             //type: SELL el array de ventas
             $product->unitsForHistorial()->attach($request->sale_prices);
             if (isset($request->unit_id) && isset($request->purchase_price)) {
+                //Data de costo del producto
+                $product->unit_id = $request->unit_id;
+                $product->purchase_price = $request->purchase_price;
+
                 //type: BUY es el costo de compra
                 $product->unitsForHistorial()->attach([array('unit_id' => $request->unit_id, 'detalle' => $request->purchase_price, 'type' => 'BUY')]);
             }
@@ -146,23 +147,20 @@ class ProductController extends Controller
         $request->validate([
             'nombre' => 'required|unique:products,nombre,' . $id,
             'other_names' => 'array|nullable',
-            'unit_id' => 'integer|nullable|exists:units,id|required_with:purchase_price',
-            'purchase_price' => ['numeric', 'nullable', 'required_with:unit_id', new NoNegativeOrZero,'max:9999'],
+            'unit_id' => 'integer|nullable|exists:units,id',
+            'purchase_price' => ['numeric', 'nullable', new NoNegativeOrZero, 'max:9999'],
             'imagen' => 'string|nullable',
             'tag_ids' => 'array|nullable',
             'tag_ids.*' => 'integer|distinct|exists:tags,id',
             'sale_prices' => 'array|required',
             'sale_prices.*.unit_id' => 'required|integer|distinct|exists:units,id',
-            'sale_prices.*.detalle' => ['required', 'numeric', new NoNegativeOrZero,'max:9999']
-        ]);
+            'sale_prices.*.detalle' => ['required', 'numeric', new NoNegativeOrZero, 'max:9999']
+        ], $this->messages);
 
         $product->nombre = ucwords(strtolower($request->nombre));
         $product->other_names = $request->other_names;
         $product->imagen = $request->imagen;
 
-        //Data de costo del producto
-        $product->unit_id = $request->unit_id;
-        $product->purchase_price = $request->purchase_price;
 
         $product->tags()->sync($request->tag_ids);
         $product->units()->sync($request->sale_prices);
@@ -185,6 +183,10 @@ class ProductController extends Controller
         $product->unitsForHistorial()->attach($sell_prices_to_update);
 
         if (isset($request->purchase_price) && isset($request->unit_id)) {
+            //Data de costo del producto
+            $product->unit_id = $request->unit_id;
+            $product->purchase_price = $request->purchase_price;
+
             /* Determinar si se agregará el precio de compra al historial */
             $latest_purchase_price = $product->historial_prices->where('unit_id', $request->unit_id)->where('type', 'BUY')->sortBy('id')->last();
             if (isset($latest_purchase_price)) {
@@ -194,6 +196,9 @@ class ProductController extends Controller
             } else {
                 $product->unitsForHistorial()->attach([array('unit_id' => $request->unit_id, 'detalle' => $request->purchase_price, 'type' => 'BUY')]);
             }
+        } else {
+            $product->unit_id = null;
+            $product->purchase_price = null;
         }
 
         if ($product->touch()) {
@@ -289,4 +294,10 @@ class ProductController extends Controller
 
         return response()->json($data, $data['code']);
     }
+
+
+    public $messages = [
+        'purchase_price.max' => 'El precio de compra es demasiado alto',
+        'sale_prices.*.detalle.max' => 'Algún precio de venta es demasiado alto'
+    ];
 }

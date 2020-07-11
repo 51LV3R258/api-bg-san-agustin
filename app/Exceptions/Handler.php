@@ -66,7 +66,7 @@ class Handler extends ExceptionHandler
             return response()->json(['error' => 'La ruta especificada no existe'], 404);
         }
         if ($exception instanceof ValidationException) {
-            return response()->json(['error' => $exception->validator->errors()], 400);
+            return response()->json(['validatorErrors' => $exception->validator->errors(), 'firstError' => $exception->validator->errors()->first()], 400);
         }
         //Si el indice no existe
         if ($exception instanceof IndexNotFoundException) {
