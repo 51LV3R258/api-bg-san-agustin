@@ -298,6 +298,7 @@ class ProductController extends Controller
 
     public $messages = [
         'purchase_price.max' => 'El precio de compra es demasiado alto',
-        'sale_prices.*.detalle.max' => 'Algún precio de venta es demasiado alto'
+        'sale_prices.*.detalle.max' => 'Algún precio de venta es demasiado alto',
+        'nombre.unique' => 'Ya existe otro producto con este nombre'
     ];
 }
