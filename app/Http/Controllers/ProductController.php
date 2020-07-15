@@ -38,9 +38,34 @@ class ProductController extends Controller
             });
         }
 
+        /* Obtener los request de cantidad de valores por página */
+        $per_page = intval($request->get('per_page'));
+        if ($per_page == null) {
+            $per_page = 15;
+        }
+
+        $type = $request->get('order_by');
+        /* Re-ordenar los productos de acuerdo al type */
+        switch ($type) {
+            case 'n':
+                $products = $products->reorder('nombre');
+                break;
+            case 'r':
+                $products = $products->reorder('id', 'desc');
+                break;
+            case 'c':
+                $products = $products->reorder('id');
+                break;
+            case 'fmod':
+                $products = $products->reorder('updated_at', 'desc');
+                break;
+            default:
+                break;
+        }
+
         $data = [
             'code' => 200,
-            'products' => $products->get()
+            'products' => $products->simplePaginate($per_page)->appends(request()->all())
         ];
 
         return response()->json($data, $data['code']);
