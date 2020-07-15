@@ -31,7 +31,24 @@ class UnitController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'nombre' => 'required|string|unique:units'
+        ]);
+
+        $unit = new Unit(['nombre' => $request->nombre]);
+        if ($unit->save()) {
+            $data = [
+                'code' => 200,
+                'message' => 'Unidad guardada',
+                // 'unit' => $unit->fresh(),
+            ];
+        } else {
+            $data = [
+                'code' => 400,
+                'error' => 'Error al guardar unidad',
+            ];
+        }
+        return response()->json($data, $data['code']);
     }
 
     /**
@@ -60,7 +77,26 @@ class UnitController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $unit = Unit::findOrFail($id);
+
+        $request->validate([
+            'nombre' => 'required|string|unique:units,nombre,' . $id
+        ]);
+
+        $unit->nombre = $request->nombre;
+
+        if ($unit->save()) {
+            $data = [
+                'code' => 200,
+                'message' => 'Unidad actualizada'
+            ];
+        } else {
+            $data = [
+                'code' => 400,
+                'error' => 'Error al actualizar el unidad'
+            ];
+        }
+        return response()->json($data, $data['code']);
     }
 
     /**

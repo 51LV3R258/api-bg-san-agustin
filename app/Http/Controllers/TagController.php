@@ -91,12 +91,12 @@ class TagController extends Controller
         if ($tag->save()) {
             $data = [
                 'code' => 200,
-                'message' => 'Producto actualizado'
+                'message' => 'Tag actualizado'
             ];
         } else {
             $data = [
                 'code' => 400,
-                'error' => 'Error al actualizar el producto'
+                'error' => 'Error al actualizar tag'
             ];
         }
         return response()->json($data, $data['code']);
