@@ -94,7 +94,7 @@ class ProductController extends Controller
         ], $this->messages);
 
         $product = new Product();
-        $product->nombre = ucwords(strtolower($request->nombre));
+        $product->nombre = ucwords($request->nombre);
         $product->other_names = $request->other_names;
         $product->imagen = $request->imagen;
 
@@ -182,7 +182,7 @@ class ProductController extends Controller
             'sale_prices.*.detalle' => ['required', 'numeric', new NoNegativeOrZero, 'max:9999']
         ], $this->messages);
 
-        $product->nombre = ucwords(strtolower($request->nombre));
+        $product->nombre = ucwords($request->nombre);
         $product->other_names = $request->other_names;
         $product->imagen = $request->imagen;
 
