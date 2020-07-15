@@ -114,6 +114,11 @@ class Product extends Model
         if (isset($this->other_names)) {
             $product_values = array_merge($product_values, $this->other_names);
         }
+        if (isset($this->tags)) {
+            foreach ($this->tags as $tag) {
+                array_push($product_values, $tag->nombre);
+            }
+        }
 
         return $product_values;
     }
