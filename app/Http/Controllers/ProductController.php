@@ -314,7 +314,7 @@ class ProductController extends Controller
 
         $data = [
             'code' => 200,
-            'products' => $products->paginate(10)
+            'products' => $products->paginate(15)
         ];
 
         return response()->json($data, $data['code']);
