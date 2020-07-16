@@ -113,7 +113,8 @@ class ProductController extends Controller
                 //type: BUY es el costo de compra
                 $product->unitsForHistorial()->attach([array('unit_id' => $request->unit_id, 'detalle' => $request->purchase_price, 'type' => 'BUY')]);
             }
-            $product = $product->fresh();
+            //Obtener producto con todos son valores guardados y agregarlo al índice
+            $product->fresh()->searchable();
             $data = [
                 'code' => 200,
                 'message' => 'Producto guardado'
@@ -227,7 +228,8 @@ class ProductController extends Controller
         }
 
         if ($product->touch()) {
-            $product = $product->fresh();
+            //Obtener producto con todos son valores guardados y agregarlo al índice
+            $product->fresh()->searchable();
             $data = [
                 'code' => 200,
                 'message' => 'Producto actualizado'
