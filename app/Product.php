@@ -4,6 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use Laravel\Scout\Searchable;
+use TeamTNT\TNTSearch\Indexer\TNTIndexer;
 
 /**
  * App\Product
@@ -107,16 +108,30 @@ class Product extends Model
      */
     public function toSearchableArray()
     {
+        $unwanted_array = array(
+            'Š' => 'S', 'š' => 's', 'Ž' => 'Z', 'ž' => 'z', 'À' => 'A', 'Á' => 'A', 'Â' => 'A', 'Ã' => 'A', 'Ä' => 'A', 'Å' => 'A', 'Æ' => 'A', 'Ç' => 'C', 'È' => 'E', 'É' => 'E',
+            'Ê' => 'E', 'Ë' => 'E', 'Ì' => 'I', 'Í' => 'I', 'Î' => 'I', 'Ï' => 'I', 'Ñ' => 'N', 'Ò' => 'O', 'Ó' => 'O', 'Ô' => 'O', 'Õ' => 'O', 'Ö' => 'O', 'Ø' => 'O', 'Ù' => 'U',
+            'Ú' => 'U', 'Û' => 'U', 'Ü' => 'U', 'Ý' => 'Y', 'Þ' => 'B', 'ß' => 'Ss', 'à' => 'a', 'á' => 'a', 'â' => 'a', 'ã' => 'a', 'ä' => 'a', 'å' => 'a', 'æ' => 'a', 'ç' => 'c',
+            'è' => 'e', 'é' => 'e', 'ê' => 'e', 'ë' => 'e', 'ì' => 'i', 'í' => 'i', 'î' => 'i', 'ï' => 'i', 'ð' => 'o', 'ñ' => 'n', 'ò' => 'o', 'ó' => 'o', 'ô' => 'o', 'õ' => 'o',
+            'ö' => 'o', 'ø' => 'o', 'ù' => 'u', 'ú' => 'u', 'û' => 'u', 'ý' => 'y', 'þ' => 'b', 'ÿ' => 'y'
+        );
+
         $product_values = [
             'id' => $this->id,
             'nombre' => $this->nombre,
+            'formatted-name' => strtr($this->nombre, $unwanted_array),
+            'tri-grams' => utf8_encode((new TNTIndexer)->buildTrigrams(strtr($this->nombre, $unwanted_array))),
         ];
         if (isset($this->other_names)) {
             $product_values = array_merge($product_values, $this->other_names);
+            foreach ($this->other_names as $other_name) {
+                array_push($product_values, strtr($other_name, $unwanted_array));
+            }
         }
         if (isset($this->tags)) {
             foreach ($this->tags as $tag) {
                 array_push($product_values, $tag->nombre);
+                array_push($product_values, strtr($tag->nombre, $unwanted_array));
             }
         }
 
