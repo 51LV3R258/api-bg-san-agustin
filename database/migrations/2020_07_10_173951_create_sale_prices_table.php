@@ -18,6 +18,7 @@ class CreateSalePricesTable extends Migration
             $table->foreignId('unit_id')->constrained()->onUpdate('cascade');
             $table->primary(['product_id', 'unit_id']);
             $table->unsignedDecimal('detalle', 8, 4);
+            $table->boolean('calculate')->default(false);
         });
     }
 
