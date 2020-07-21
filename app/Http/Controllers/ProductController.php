@@ -107,7 +107,7 @@ class ProductController extends Controller
             //type: SELL el array de ventas
             $prices_to_store = array();
             foreach ($request->sale_prices as $sale_price) {
-                unset($sale_price['calculate']);//Limpiar el calculate si es recibido
+                unset($sale_price['calculate']); //Limpiar el calculate si es recibido
                 array_push($prices_to_store, $sale_price);
             }
             $product->unitsForHistorial()->attach($prices_to_store);
@@ -187,7 +187,7 @@ class ProductController extends Controller
             'sale_prices' => 'array|required',
             'sale_prices.*.unit_id' => 'required|integer|distinct|exists:units,id',
             'sale_prices.*.detalle' => ['required', 'numeric', new NoNegativeOrZero, 'max:9999'],
-            'sale_prices.*.calculate' => 'required|boolean'
+            'sale_prices.*.calculate' => 'sometimes|boolean'
         ], $this->messages);
 
         $product->nombre = ucwords($request->nombre);
