@@ -91,6 +91,7 @@ class ProductController extends Controller
             'sale_prices' => 'array|required',
             'sale_prices.*.unit_id' => 'required|integer|distinct|exists:units,id',
             'sale_prices.*.detalle' => ['required', 'numeric', new NoNegativeOrZero, 'max:9999'],
+            'sale_prices.*.calculate' => 'sometimes|boolean'
         ], $this->messages);
 
         $product = new Product();
@@ -104,7 +105,12 @@ class ProductController extends Controller
             $product->units()->attach($request->sale_prices);
             //Vincular a historial de precios
             //type: SELL el array de ventas
-            $product->unitsForHistorial()->attach($request->sale_prices);
+            $prices_to_store = array();
+            foreach ($request->sale_prices as $sale_price) {
+                unset($sale_price['calculate']);//Limpiar el calculate si es recibido
+                array_push($prices_to_store, $sale_price);
+            }
+            $product->unitsForHistorial()->attach($prices_to_store);
             if (isset($request->unit_id) && isset($request->purchase_price)) {
                 //Data de costo del producto
                 $product->unit_id = $request->unit_id;
@@ -180,7 +186,8 @@ class ProductController extends Controller
             'tag_ids.*' => 'integer|distinct|exists:tags,id',
             'sale_prices' => 'array|required',
             'sale_prices.*.unit_id' => 'required|integer|distinct|exists:units,id',
-            'sale_prices.*.detalle' => ['required', 'numeric', new NoNegativeOrZero, 'max:9999']
+            'sale_prices.*.detalle' => ['required', 'numeric', new NoNegativeOrZero, 'max:9999'],
+            'sale_prices.*.calculate' => 'required|boolean'
         ], $this->messages);
 
         $product->nombre = ucwords($request->nombre);
@@ -194,6 +201,7 @@ class ProductController extends Controller
         /* Determinar si se agregará el precio de venta al historial*/
         $sell_prices_to_update = array();
         foreach ($request->sale_prices as $sale_price) {
+            unset($sale_price['calculate']); //Remover valor calculate innecesario en historial
             $latest_sell_price = $product->historial_prices
                 ->where('unit_id', $sale_price['unit_id'])->where('type', 'SELL')->sortBy('id')
                 ->last();
