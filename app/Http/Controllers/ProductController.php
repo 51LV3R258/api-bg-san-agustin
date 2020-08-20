@@ -236,8 +236,6 @@ class ProductController extends Controller
         }
 
         if ($product->touch()) {
-            //Obtener producto con todos son valores guardados y agregarlo al índice
-            $product->fresh()->searchable();
             $data = [
                 'code' => 200,
                 'message' => 'Producto actualizado'
