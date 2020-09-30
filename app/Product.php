@@ -65,7 +65,7 @@ class Product extends Model
 
     public function units()
     {
-        return $this->belongsToMany('App\Unit', 'sale_prices')->as('sale_prices')->withPivot(['detalle']);
+        return $this->belongsToMany('App\Unit', 'sale_prices')->as('sale_prices')->withPivot(['detalle','calculate']);
     }
 
     public function unit()

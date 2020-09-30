@@ -196,6 +196,9 @@ class ProductController extends Controller
 
 
         $product->tags()->sync($request->tag_ids);
+
+        // * Remover sales_prices para poder sincronizarlos correctamente
+        $product->units()->detach();
         $product->units()->sync($request->sale_prices);
 
         /* Determinar si se agregará el precio de venta al historial*/
