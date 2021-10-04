@@ -27,3 +27,17 @@ Route::group(['prefix' => 'v1.0.0'], function () {
         Route::get('product', 'ProductController@search');
     });
 });
+
+Route::group(['prefix' => 'v1.0.1'], function () {
+    Route::apiResource('products', 'ProductController');
+    Route::apiResource('tags', 'TagController', [
+        'except' => ['destroy']
+    ]);
+    Route::apiResource('units', 'UnitController', [
+        'except' => ['destroy']
+    ]);
+
+    Route::group(['prefix' => 'search'], function () {
+        Route::get('products', 'ProductController@search');
+    });
+});
